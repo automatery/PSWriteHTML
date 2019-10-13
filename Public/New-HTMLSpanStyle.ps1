@@ -2,8 +2,10 @@ function New-HTMLSpanStyle {
     [CmdletBinding()]
     param(
         [ScriptBlock] $Content,
-        [nullable[RGBColors]] $Color,
-        [nullable[RGBColors]] $BackGroundColor,
+        [ValidateScript({$_ -in $Global:RGBColors.Keys -or $_ -match "^#([A-Fa-f0-9]{6})$" -or $_ -eq ""})]
+        [string] $Color,
+        [ValidateScript({$_ -in $Global:RGBColors.Keys -or $_ -match "^#([A-Fa-f0-9]{6})$" -or $_ -eq ""})]
+        [string] $BackGroundColor,
         [int] $FontSize,
         [ValidateSet('normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900')][string] $FontWeight,
         [ValidateSet('normal', 'italic', 'oblique')][string] $FontStyle,
@@ -15,6 +17,20 @@ function New-HTMLSpanStyle {
         [ValidateSet('rtl')][string] $Direction,
         [switch] $LineBreak
     )
+    #region Check if color is colorname or hex
+    If($Color -match "^#([A-Fa-f0-9]{6})$"){
+        $ColorHEX = $Color
+    }
+    elseif($Color -in $Global:RGBColors.Keys){
+        $ColorHEX = ConvertFrom-Color -Color $Color
+    }
+    If($BackGroundColor -match "^#([A-Fa-f0-9]{6})$"){
+        $BackGroundColorHEX = $BackGroundColor
+    }
+    elseif($BackGroundColor -in $Global:RGBColors.Keys){
+        $BackGroundColorHEX = ConvertFrom-Color -Color $BackGroundColor
+    }
+    #endregion Check if color is colorname or hex
     if ($FontSize -eq 0) {
         $Size = ''
     } else {
@@ -22,8 +38,8 @@ function New-HTMLSpanStyle {
     }
     $Style = @{
         style = @{
-            'color'            = ConvertFrom-Color -Color $Color
-            'background-color' = ConvertFrom-Color -Color $BackGroundColor
+            'color'            = $ColorHEX
+            'background-color' = $BackGroundColorHEX
             'font-size'        = $Size
             'font-weight'      = $FontWeight
             'font-variant'     = $FontVariant

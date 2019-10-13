@@ -1,0 +1,2 @@
+Register-ArgumentCompleter -CommandName New-HTMLText -ParameterName Color -ScriptBlock {$Global:RGBColors.Keys}
+Register-ArgumentCompleter -CommandName New-HTMLText -ParameterName BackgroundColor -ScriptBlock {$Global:RGBColors.Keys}
